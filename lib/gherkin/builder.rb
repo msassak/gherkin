@@ -8,11 +8,16 @@ module Gherkin
       instance_eval(&block) if block_given?
     end
 
+    def build(&block)
+      instance_eval(&block)
+    end
+
     def lang
       @i18n.iso_code
     end
 
     def method_missing(kw, *args, &block)
+      # Need to call super or we'll get super (ha ha) weird errors
       if kw == :step
         @elements << [*extract_step(args[0])]
       else # kw is for a container element
