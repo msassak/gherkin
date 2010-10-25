@@ -37,6 +37,20 @@ module Gherkin
       subject.step :given, "something else"
       subject.elements.should == [["Given", "something else"]]
     end
+
+    it "builds raw steps with sugar" do
+      subject.build do |builder|
+        builder.given "I have a sweet tooth"
+        builder.when  "I pass a block with an arity of one"
+        builder.then  "I can specify the adverb via the method name"
+      end
+
+      subject.elements.should == [
+        ["Given", "I have a sweet tooth"],
+        ["When",  "I pass a block with an arity of one"],
+        ["Then",  "I can specify the adverb via the method name"]
+      ]
+    end
   end
 
   describe Builder, "with a specific language" do

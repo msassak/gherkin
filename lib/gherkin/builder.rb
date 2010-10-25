@@ -20,6 +20,8 @@ module Gherkin
       # Need to call super or we'll get super (ha ha) weird errors
       if kw == :step
         @elements << [step_to_i18n(args[0]), args[1]]
+      elsif [:given, :when, :then, :and, :but].include?(kw)
+        @elements << [step_to_i18n(kw), args[0]]
       else # kw is for a container element
         @elements << [kw_to_i18n(kw), args[0]]
       end
