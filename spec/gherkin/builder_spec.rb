@@ -34,7 +34,7 @@ module Gherkin
     end
 
     it "builds raw steps" do
-      subject.step "Given something else"
+      subject.step :given, "something else"
       subject.elements.should == [["Given", "something else"]]
     end
   end
@@ -49,6 +49,7 @@ module Gherkin
         scenario "Baz"
         scenario_outline "Qux"
         examples "Quux"
+        step :given, "Wibble"
       end
 
       subject.elements.should == [
@@ -56,7 +57,8 @@ module Gherkin
         ["Bakgrunn", "Bar"],
         ["Scenario", "Baz"],
         ["Abstrakt Scenario", "Qux"],
-        ["Eksempler", "Quux"]
+        ["Eksempler", "Quux"],
+        ["Gitt", "Wibble"]
       ]
     end
   end
