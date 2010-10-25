@@ -10,32 +10,32 @@ module Gherkin
 
     it "builds raw features" do
       subject.feature "foo"
-      subject.elements.should == [["Feature", "foo"]]
+      subject.elements.should == [[:feature, "Feature", "foo"]]
     end
 
     it "builds raw scenarios" do
       subject.scenario "test"
-      subject.elements.should == [["Scenario", "test"]]
+      subject.elements.should == [[:scenario, "Scenario", "test"]]
     end
 
     it "builds raw backgrounds" do
       subject.background "bigger GBs"
-      subject.elements.should == [["Background", "bigger GBs"]]
+      subject.elements.should == [[:background, "Background", "bigger GBs"]]
     end
 
     it "builds raw scenario outlines" do
       subject.scenario_outline "test 2"
-      subject.elements.should == [["Scenario Outline", "test 2"]]
+      subject.elements.should == [[:scenario_outline, "Scenario Outline", "test 2"]]
     end
 
     it "builds raw examples" do
       subject.examples "yet another example of the futility of something"
-      subject.elements.should == [["Examples", "yet another example of the futility of something"]]
+      subject.elements.should == [[:examples, "Examples", "yet another example of the futility of something"]]
     end
 
     it "builds raw steps" do
       subject.step :given, "something else"
-      subject.elements.should == [["Given", "something else"]]
+      subject.elements.should == [[:step, "Given ", "something else"]]
     end
 
     it "builds raw steps with blocky sugar" do
@@ -46,9 +46,9 @@ module Gherkin
       end
 
       subject.elements.should == [
-        ["Given", "I have a sweet tooth"],
-        ["When",  "I pass a block with an arity of one"],
-        ["Then",  "I can specify the adverb via the method name"]
+        [:step, "Given ", "I have a sweet tooth"],
+        [:step, "When ",  "I pass a block with an arity of one"],
+        [:step, "Then ",  "I can specify the adverb via the method name"]
       ]
     end
     
@@ -70,16 +70,40 @@ module Gherkin
       end
 
       subject.elements.should == [
-        ["Feature", "It will build you an island"],
-        ["Scenario", "Cell mart"],
-        ["Given", "An Evo 4G"],
-        ["When", "iPhone 4s are sold out"],
-        ["Then", "I need the one with the bigger GBs"],
-        ["Scenario", "Apathy"],
-        ["When", "It's out of date"],
-        ["Then", "I don't care"],
-        ["And", "I heard Walmart has them"]
+        [:feature, "Feature", "It will build you an island"],
+        [:scenario, "Scenario", "Cell mart"],
+        [:step, "Given ", "An Evo 4G"],
+        [:step, "When ", "iPhone 4s are sold out"],
+        [:step, "Then ", "I need the one with the bigger GBs"],
+        [:scenario, "Scenario", "Apathy"],
+        [:step, "When ", "It's out of date"],
+        [:step, "Then ", "I don't care"],
+        [:step, "And ", "I heard Walmart has them"]
       ]
+    end
+
+    describe "#to_gherkin" do
+      it "outputs the feature in Gherkin format" do
+        subject.build do 
+          feature "LULZ" do
+            scenario "Maglarble" do |s|
+              s.given "a dog"
+              s.and   "a fire hydrant"
+              s.then  "maglarble!"
+            end
+          end
+        end
+
+        subject.to_gherkin.should == <<EOF
+Feature: LULZ
+
+  Scenario: Maglarble
+    Given a dog
+    And a fire hydrant
+    Then maglarble!
+EOF
+
+      end
     end
   end
 
@@ -97,12 +121,12 @@ module Gherkin
       end
 
       subject.elements.should == [
-        ["Egenskap", "Foo"],
-        ["Bakgrunn", "Bar"],
-        ["Scenario", "Baz"],
-        ["Abstrakt Scenario", "Qux"],
-        ["Eksempler", "Quux"],
-        ["Gitt", "Wibble"]
+        [:feature, "Egenskap", "Foo"],
+        [:background, "Bakgrunn", "Bar"],
+        [:scenario, "Scenario", "Baz"],
+        [:scenario_outline, "Abstrakt Scenario", "Qux"],
+        [:examples, "Eksempler", "Quux"],
+        [:step, "Gitt ", "Wibble"]
       ]
     end
   end
