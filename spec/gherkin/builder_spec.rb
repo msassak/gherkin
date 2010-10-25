@@ -38,7 +38,7 @@ module Gherkin
       subject.elements.should == [["Given", "something else"]]
     end
 
-    it "builds raw steps with sugar" do
+    it "builds raw steps with blocky sugar" do
       subject.build do |builder|
         builder.given "I have a sweet tooth"
         builder.when  "I pass a block with an arity of one"
@@ -49,6 +49,36 @@ module Gherkin
         ["Given", "I have a sweet tooth"],
         ["When",  "I pass a block with an arity of one"],
         ["Then",  "I can specify the adverb via the method name"]
+      ]
+    end
+    
+    it "builds containing and contained elements with delicious blocky sugar" do
+      subject.build do
+        feature "It will build you an island" do
+          scenario "Cell mart" do |s|
+            s.given "An Evo 4G"
+            s.when  "iPhone 4s are sold out"
+            s.then  "I need the one with the bigger GBs"
+          end
+
+          scenario "Apathy" do
+            step :when, "It's out of date"
+            step :then, "I don't care"
+            step :and,  "I heard Walmart has them"
+          end
+        end
+      end
+
+      subject.elements.should == [
+        ["Feature", "It will build you an island"],
+        ["Scenario", "Cell mart"],
+        ["Given", "An Evo 4G"],
+        ["When", "iPhone 4s are sold out"],
+        ["Then", "I need the one with the bigger GBs"],
+        ["Scenario", "Apathy"],
+        ["When", "It's out of date"],
+        ["Then", "I don't care"],
+        ["And", "I heard Walmart has them"]
       ]
     end
   end

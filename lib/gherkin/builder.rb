@@ -24,6 +24,7 @@ module Gherkin
         @elements << [step_to_i18n(kw), args[0]]
       else # kw is for a container element
         @elements << [kw_to_i18n(kw), args[0]]
+        instance_eval(&block) if block_given?
       end
     end
 
