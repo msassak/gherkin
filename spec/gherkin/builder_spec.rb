@@ -4,8 +4,8 @@ require 'gherkin/builder'
 
 module Gherkin
   describe Builder do
-    it "defaults to using en lang" do
-      subject.lang.should == "en"
+    it "defaults to the English translation" do
+      subject.i18n_lang.should == "en"
     end
 
     it "builds raw features" do

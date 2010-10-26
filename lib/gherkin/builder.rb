@@ -16,7 +16,7 @@ module Gherkin
       instance_eval(&block)
     end
 
-    def lang
+    def i18n_lang
       @i18n.iso_code
     end
 
