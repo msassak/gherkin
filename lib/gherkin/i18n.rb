@@ -167,6 +167,12 @@ module Gherkin
       io.read
     end
 
+    def translate(element_name)
+      kws = keywords(element_name)
+      kws.delete("* ")
+      kws.first
+    end
+
     private
 
     def real_keyword(key, keyword)

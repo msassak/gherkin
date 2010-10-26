@@ -148,6 +148,27 @@ module Gherkin
 }
         end
       end
+
+      describe "#translate" do
+        subject  { Gherkin::I18n     }
+        let(:no) { subject.new("no") }
+        let(:fr) { subject.new("fr") }
+
+        it "translates element names into natural language" do
+          no.translate(:feature).should == "Egenskap"
+          no.translate("background").should == "Bakgrunn"
+        end
+
+        it "removes the bullet-point asterisk" do
+          no.translate(:given).should_not include("*")
+          no.translate(:given).should == "Gitt "
+        end
+
+        it "returns the first possible translation if there are several" do
+          fr.keywords(:given).length.should == 3
+          fr.translate(:given).should == "Soit "
+        end
+      end
     end
   end
 end
