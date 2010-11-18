@@ -1,20 +1,15 @@
 package gherkin.formatter.model;
 
-import gherkin.formatter.Argument;
+import gherkin.formatter.Formatter;
+import gherkin.formatter.Mappable;
 
-import java.util.List;
-
-public class Result {
+public class Result extends Mappable {
     private final String status;
-    private final String errorMessage;
-    private final List<Argument> arguments;
-    private final String stepdefLocation;
+    private final String error_message;
 
-    public Result(String status, String errorMessage, List<Argument> arguments, String stepdefLocation) {
+    public Result(String status, String errorMessage) {
         this.status = status;
-        this.errorMessage = errorMessage;
-        this.arguments = arguments;
-        this.stepdefLocation = stepdefLocation;
+        this.error_message = errorMessage;
     }
 
     public String getStatus() {
@@ -22,14 +17,10 @@ public class Result {
     }
 
     public String getErrorMessage() {
-        return errorMessage;
+        return error_message;
     }
 
-    public List<Argument> getArguments() {
-        return arguments;
-    }
-
-    public String getStepdefLocation() {
-        return stepdefLocation;
+    public void replay(Formatter formatter) {
+        formatter.result(this);
     }
 }

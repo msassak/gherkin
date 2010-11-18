@@ -1,11 +1,6 @@
 package gherkin.formatter;
 
-import gherkin.formatter.model.Background;
-import gherkin.formatter.model.Examples;
-import gherkin.formatter.model.Feature;
-import gherkin.formatter.model.Scenario;
-import gherkin.formatter.model.ScenarioOutline;
-import gherkin.formatter.model.Step;
+import gherkin.formatter.model.*;
 
 import java.util.List;
 
@@ -28,9 +23,15 @@ public interface Formatter {
 
     void step(Step step);
 
+    void match(Match match);
+
+    void result(Result result);
+
     void eof();
 
     void syntaxError(String state, String event, List<String> legalEvents, String uri, int line);
 
     void steps(List<Step> steps);
+
+    void embedding(String mimeType, byte[] data);
 }

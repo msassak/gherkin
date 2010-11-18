@@ -1,9 +1,9 @@
 # encoding: utf-8
-require 'spec_helper'
 require 'gherkin/formatter/pretty_formatter'
 require 'gherkin/formatter/argument'
 require 'gherkin/formatter/model'
 require 'gherkin/listener/formatter_listener'
+require 'gherkin/parser/parser'
 require 'stringio'
 
 module Gherkin
@@ -28,59 +28,88 @@ module Gherkin
         end
       end
 
-      def result(status, error_message, arguments, stepdef_location)
-        Model::Result.new(status, error_message, arguments, stepdef_location)
-      end
-
       before do
         @io = StringIO.new
-        @colf = Gherkin::Formatter::PrettyFormatter.new(@io, false)
+        @f = Gherkin::Formatter::PrettyFormatter.new(@io, false)
       end
 
       it "should print comments when scenario is longer" do
-        @colf.uri("features/foo.feature")
-        @colf.feature(Model::Feature.new([], [], "Feature", "Hello", "World", 1))
-        step1 = Model::Step.new([], "Given ", "some stuff", 5, nil, result('passed', nil, [], "features/step_definitions/bar.rb:56"))
-        step2 = Model::Step.new([], "When ", "foo", 6, nil, result('passed', nil, [], "features/step_definitions/bar.rb:96"))
-        @colf.steps([step1, step2])
-        @colf.scenario(Model::Scenario.new([], [], "Scenario", "The scenario", "", 4))
-        @colf.step(step1)
-        @colf.step(step2)
+        @f.uri("features/foo.feature")
+        @f.feature(Model::Feature.new([], [], "Feature", "Hello", "World", 1))
+
+        step1 = Model::Step.new([], "Given ", "some stuff", 5)
+        match1 = Model::Match.new([], "features/step_definitions/bar.rb:56")
+        result1 = Model::Result.new('passed', nil)
+
+        step2 = Model::Step.new([], "When ", "foo", 6)
+        match2 = Model::Match.new([], "features/step_definitions/bar.rb:96")
+        result2 = Model::Result.new('passed', nil)
+
+        @f.steps([step1, step2])
+        @f.scenario(Model::Scenario.new([], [], "Scenario", "The scenario", "", 4))
+
+        @f.step(step1)
+        @f.match(match1)
+        @f.result(result1)
+
+        @f.step(step2)
+        @f.match(match2)
+        @f.result(result2)
 
         assert_io(%{Feature: Hello
   World
 
   Scenario: The scenario #{grey('# features/foo.feature:4')}
-    #{green('Given ')}#{green('some stuff')}     #{grey('# features/step_definitions/bar.rb:56')}
-    #{green('When ')}#{green('foo')}             #{grey('# features/step_definitions/bar.rb:96')}
+    #{magenta('Given ')}#{magenta('some stuff')}     #{grey('# features/step_definitions/bar.rb:56')}
+\033[1A    #{green('Given ')}#{green('some stuff')}     #{grey('# features/step_definitions/bar.rb:56')}
+    #{magenta('When ')}#{magenta('foo')}             #{grey('# features/step_definitions/bar.rb:96')}
+\033[1A    #{green('When ')}#{green('foo')}             #{grey('# features/step_definitions/bar.rb:96')}
 })
       end
 
       it "should print comments when step is longer" do
-        @colf.uri("features/foo.feature")
-        @colf.feature(Model::Feature.new([], [], "Feature", "Hello", "World", 1))
-        step = Model::Step.new([], "Given ", "some stuff that is longer", 5, nil, result('passed', nil, [], "features/step_definitions/bar.rb:56"))
-        @colf.steps([step])
-        @colf.scenario(Model::Scenario.new([], [], "Scenario", "The scenario", "", 4))
-        @colf.step(step)
+        @f.uri("features/foo.feature")
+        @f.feature(Model::Feature.new([], [], "Feature", "Hello", "World", 1))
+        step = Model::Step.new([], "Given ", "some stuff that is longer", 5)
+        match = Model::Match.new([], "features/step_definitions/bar.rb:56")
+        result = Model::Result.new('passed', nil)
+
+        @f.steps([step])
+        @f.scenario(Model::Scenario.new([], [], "Scenario", "The scenario", "", 4))
+        @f.step(step)
+        @f.match(match)
+        @f.result(result)
 
         assert_io(%{Feature: Hello
   World
 
   Scenario: The scenario            #{grey('# features/foo.feature:4')}
-    #{green('Given ')}#{green('some stuff that is longer')} #{grey('# features/step_definitions/bar.rb:56')}
+    #{magenta('Given ')}#{magenta('some stuff that is longer')} #{grey('# features/step_definitions/bar.rb:56')}
+\033[1A    #{green('Given ')}#{green('some stuff that is longer')} #{grey('# features/step_definitions/bar.rb:56')}
 })
       end
 
       it "should highlight arguments for regular steps" do
-        step = Model::Step.new([], "Given ", "I have 999 cukes in my belly", 3, nil, result('passed', nil, [Gherkin::Formatter::Argument.new(7, '999')], nil))
-        @colf.steps([step])
-        @colf.step(step)
+        step = Model::Step.new([], "Given ", "I have 999 cukes in my belly", 3)
+        match = Model::Match.new([Gherkin::Formatter::Argument.new(7, '999')], nil)
+        result = Model::Result.new('passed', nil)
+
+        @f.steps([step])
+        @f.step(step)
+        @f.match(match)
+        @f.result(result)
+
         if defined?(JRUBY_VERSION)
           # Not terribly readable. The result on Java is different because JANSI uses semicolons when there are several codes.
-          assert_io("    \e[32mGiven \e[0m\e[32mI have \e[0m\e[32;1m999\e[0m\e[32m cukes in my belly\e[0m\n")
+          assert_io(
+            "    \e[35mGiven \e[0m\e[35mI have \e[0m\e[35;1m999\e[0m\e[35m cukes in my belly\e[0m\n" +
+            "\033[1A    \e[32mGiven \e[0m\e[32mI have \e[0m\e[32;1m999\e[0m\e[32m cukes in my belly\e[0m\n"
+          )
         else
-          assert_io("    #{green('Given ')}#{green('I have ')}#{green(bold('999'))}#{green(' cukes in my belly')}\n")
+          assert_io(
+            "    #{magenta('Given ')}#{magenta('I have ')}#{magenta(bold('999'))}#{magenta(' cukes in my belly')}\n" +
+            "\033[1A    #{green('Given ')}#{green('I have ')}#{green(bold('999'))}#{green(' cukes in my belly')}\n"
+          )
         end
       end
 

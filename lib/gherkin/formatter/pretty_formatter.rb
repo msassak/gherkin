@@ -60,28 +60,43 @@ module Gherkin
       end
 
       def step(step)
-        print_step(step)
-        case step.multiline_arg
+        @step = step
+        @step_index += 1 if @step_index
+        match(Model::Match.new([], nil)) if @monochrome
+      end
+
+      def match(match)
+        @match = match
+        print_step('executing', @match.arguments, @match.location)
+      end
+
+      def result(result)
+        @io.write("\033[1A")
+        print_step(result.status, @match.arguments, @match.location)
+      end
+
+      def print_step(status, arguments, location)
+        text_format = format(status)
+        arg_format = arg_format(status)
+        
+        print_comments(@step.comments, '    ')
+        @io.write('    ')
+        @io.write(text_format.text(@step.keyword))
+        @step_printer.write_step(@io, text_format, arg_format, @step.name, arguments)
+        print_indented_step_location(location) if location
+
+        @io.puts
+        case @step.multiline_arg
         when Model::PyString
-          py_string(step.multiline_arg)
+          py_string(@step.multiline_arg)
         when Array
-          table(step.multiline_arg)
+          table(@step.multiline_arg)
         end
       end
 
-      def print_step(step)
-        print_comments(step.comments, '    ')
-        @io.write('    ')
-        text_format(step).write_text(@io, step.keyword)
-        @step_printer.write_step(@io, text_format(step), arg_format(step), step.name, step.arguments)
-        print_indented_stepdef_location!(step.result.stepdef_location) if step.result
-        # TODO: Print error message
-        @io.puts
-      end
-
       class MonochromeFormat
-        def write_text(io, text)
-          io.write(text)
+        def text(text)
+          text
         end
       end
 
@@ -92,17 +107,13 @@ module Gherkin
           @status = status
         end
 
-        def write_text(io, text)
-          io.write(self.__send__(@status, text))
+        def text(text)
+          self.__send__(@status, text)
         end
       end
 
-      def text_format(step)
-        format(step.status)
-      end
-
-      def arg_format(step)
-        format(step.status + '_param')
+      def arg_format(key)
+        format("#{key}_arg")
       end
 
       def format(key)
@@ -207,8 +218,8 @@ module Gherkin
         ' ' * indent + ' ' + comments("# #{@uri}:#{line}")
       end
 
-      def print_indented_stepdef_location!(location)
-        indent = @max_step_length - @step_lengths[@step_index+=1]
+      def print_indented_step_location(location)
+        indent = @max_step_length - @step_lengths[@step_index]
         return if location.nil?
         @io.write(' ' * indent + ' ' + comments("# #{location}"))
       end
