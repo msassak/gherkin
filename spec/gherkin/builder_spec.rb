@@ -124,7 +124,7 @@ EOF
         [:feature, "Egenskap", "Foo"],
         [:background, "Bakgrunn", "Bar"],
         [:scenario, "Scenario", "Baz"],
-        [:scenario_outline, "Abstrakt Scenario", "Qux"],
+        [:scenario_outline, "Scenariomal", "Qux"],
         [:examples, "Eksempler", "Quux"],
         [:step, "Gitt ", "Wibble"]
       ]

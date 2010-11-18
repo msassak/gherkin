@@ -5,6 +5,13 @@ module Gherkin
   module Formatter
     module Model
       class BasicStatement < Hashable
+        def self.from_raw(element)
+          args = [[]] # placeholder for comments
+          args.push(*element[1..-1])
+          args.push(-1) # placeholder line number
+          new(*args)
+        end
+
         attr_reader :comments, :keyword, :name, :line
         
         def initialize(comments, keyword, name, line)
@@ -22,6 +29,14 @@ module Gherkin
       end
 
       class DescribedStatement < BasicStatement
+        def self.from_raw(element)
+          args = [[]] # Placeholder for comments
+          args.push(*element[1..-1])
+          args.push("")
+          args.push(-1) # placeholder line number
+          new(*args)
+        end
+
         attr_reader :description
 
         def initialize(comments, keyword, name, description, line)
@@ -31,6 +46,15 @@ module Gherkin
       end
 
       class TagStatement < DescribedStatement
+        def self.from_raw(element)
+          args = [[]] # Placeholder for comments
+          args.push([])
+          args.push(*element[1..-1])
+          args.push("")
+          args.push(-1) # placeholder line number
+          new(*args)
+        end
+
         attr_reader :tags
 
         def initialize(comments, tags, keyword, name, description, line)

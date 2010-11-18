@@ -45,26 +45,7 @@ module Gherkin
     def model_from_element(element)
       class_name = element[0]
       model_class = Formatter::Model.const_get(classify(element[0]))
-      args = [[]] # Placeholder for comments
-      
-      sclass = model_class.superclass
-
-      # FIXME: polymorphism like whoah. each statement class should be able to 
-      # create itself from an element (which is secretly a sexp... sshhhhh)
-      if sclass == Formatter::Model::TagStatement
-        args.push([])
-        args.push(*element[1..-1])
-        args.push("")
-      elsif sclass == Formatter::Model::DescribedStatement
-        args.push(*element[1..-1])
-        args.push("")
-      elsif sclass == Formatter::Model::BasicStatement
-        args.push(*element[1..-1])
-      else
-        raise "Can't make a model out of #{elements}."
-      end
-      args.push(-1) # placeholder line number
-      model_class.new(*args)
+      model_class.from_raw(element)
     end
 
     def classify(sym)
