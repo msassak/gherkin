@@ -35,22 +35,12 @@ module Gherkin
     def to_gherkin
       out = StringIO.new
       pretty = Formatter::PrettyFormatter.new(out, true)
-      @elements.each{ |element| model_from_element(element).replay(pretty) }
+      @elements.each{ |element| Formatter::Model.from_raw(element).replay(pretty) }
       out.rewind
       out.string
     end
 
     private
-
-    def model_from_element(element)
-      class_name = element[0]
-      model_class = Formatter::Model.const_get(classify(element[0]))
-      model_class.from_raw(element)
-    end
-
-    def classify(sym)
-      sym.to_s.split('_').map{|s| s.capitalize}.join
-    end
 
     def translate(word)
       @i18n.translate(word)

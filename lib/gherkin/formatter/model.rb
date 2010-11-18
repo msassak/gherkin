@@ -4,6 +4,19 @@ require 'gherkin/formatter/hashable'
 module Gherkin
   module Formatter
     module Model
+      class << self
+        def from_raw(element)
+          class_name = element[0]
+          model = const_get(classify(class_name))
+          model.from_raw(element)
+        end
+
+        def classify(identifier)
+          identifier.to_s.split('_').map{|s| s.capitalize}.join
+        end
+        private :classify
+      end
+
       class BasicStatement < Hashable
         def self.from_raw(element)
           args = [[]] # placeholder for comments
