@@ -6,7 +6,7 @@ module Gherkin
     module Model
       class << self
         def from_raw(element)
-          class_name = element[0]
+          class_name = element.shift
           model = const_get(classify(class_name))
           model.from_raw(element)
         end
@@ -20,7 +20,7 @@ module Gherkin
       class BasicStatement < Hashable
         def self.from_raw(element)
           args = [[]] # placeholder for comments
-          args.push(*element[1..-1])
+          args.push(*element)
           args.push(-1) # placeholder line number
           new(*args)
         end
@@ -44,7 +44,7 @@ module Gherkin
       class DescribedStatement < BasicStatement
         def self.from_raw(element)
           args = [[]] # Placeholder for comments
-          args.push(*element[1..-1])
+          args.push(*element)
           args.push("")
           args.push(-1) # placeholder line number
           new(*args)
@@ -62,7 +62,7 @@ module Gherkin
         def self.from_raw(element)
           args = [[]] # Placeholder for comments
           args.push([])
-          args.push(*element[1..-1])
+          args.push(*element)
           args.push("")
           args.push(-1) # placeholder line number
           new(*args)
