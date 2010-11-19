@@ -26,6 +26,9 @@ module Gherkin
         @elements << [:step, translate(args[0]), args[1]]
       elsif [:given, :when, :then, :and, :but].include?(kw)
         @elements << [:step, translate(kw), args[0]]
+      elsif kw == :tags
+        tags = args.flatten.map{|tag| tag.to_s}
+        @elements << [kw, tags]
       else # kw is for a container element
         @elements << [kw, translate(kw), args[0]]
         instance_eval(&block) if block_given?

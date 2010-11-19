@@ -38,6 +38,17 @@ module Gherkin
       subject.elements.should == [[:step, "Given ", "something else"]]
     end
 
+    it "builds raw tags" do
+      subject.tags "foo"
+      subject.tags :bar
+      subject.tags ["baz", :qux], :quux
+      subject.elements.should == [
+        [:tags, ["foo"]],
+        [:tags, ["bar"]],
+        [:tags, ["baz", "qux", "quux"]]
+      ]
+    end
+
     it "builds raw steps with blocky sugar" do
       subject.build do |builder|
         builder.given "I have a sweet tooth"
