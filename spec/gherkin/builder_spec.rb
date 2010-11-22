@@ -38,6 +38,16 @@ module Gherkin
       subject.to_sexps.should == [[:step, "Given ", "something else"]]
     end
 
+    it "builds py_string steps" do
+      subject.step :given, "with py_string", "oh i am a very long string"
+      subject.to_sexps.should == [[:step, "Given ", "with py_string", "oh i am a very long string"]]
+    end
+
+    it "builds table steps" do
+      subject.step :given, "a table", [%w(oh here it is), %w(yes how nice indeed)]
+      subject.to_sexps.should == [[:step, "Given ", "a table", [%w(oh here it is), %w(yes how nice indeed)]]]
+    end
+
     it "builds raw tags" do
       subject.feature "My Feature"
       subject.tags "foo"

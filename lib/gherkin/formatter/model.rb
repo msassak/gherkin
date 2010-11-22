@@ -143,6 +143,10 @@ module Gherkin
       class Step < BasicStatement
         native_impl('gherkin')
 
+        def self.from_hash(element)
+          new(*element.values_at(:comments, :keyword, :name, :line))
+        end
+
         attr_accessor :multiline_arg
 
         def line_range

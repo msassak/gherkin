@@ -23,7 +23,8 @@ module Gherkin
 
     def method_missing(kw, *args, &block)
       if kw == :step
-        elements << build_hash(:step, translate(args[0]), args[1])
+        elements << build_hash(:step, translate(args[0]), args[1], 
+                               :multiline_arg => args[2])
 
       elsif [:given, :when, :then, :and, :but].include?(kw)
         elements << build_hash(:step, translate(kw), args[0])
@@ -63,8 +64,9 @@ module Gherkin
     def to_sexps
       elements.collect do |element| 
         sexp = element.values_at(:type, :keyword, :name)
-        sexp << element[:description] unless element[:description].empty?
-        sexp << element[:tags] unless element[:tags].empty?
+        sexp << element[:description]   unless element[:description].empty?
+        sexp << element[:tags]          unless element[:tags].empty?
+        sexp << element[:multiline_arg] unless element[:multiline_arg].nil?
         sexp
       end
     end
@@ -83,17 +85,18 @@ module Gherkin
       [:feature, :background, :scenario, :scenario_outline, :examples]
     end
 
-    def build_hash(type, keyword, name)
+    def build_hash(type, keyword, name, opts={})
       {
-        :type        => nil,
-        :keyword     => nil,
-        :name        => nil,
-        :description => "",
-        :line        => -1,
-        :comments    => [],
-        :tags        => [],
-        :rows        => []
-      }.merge(:type => type, :keyword => keyword, :name => name)
+        :type          => type,
+        :keyword       => keyword,
+        :name          => name,
+        :description   => "",
+        :line          => -1,
+        :comments      => [],
+        :tags          => [],
+        :rows          => [],
+        :multiline_arg => nil
+      }.merge(opts)
     end
 
     def add_language_pragma(lang, element)
