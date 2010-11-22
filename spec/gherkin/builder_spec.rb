@@ -104,10 +104,10 @@ module Gherkin
             tags "foo"
 
             scenario "Maglarble" do |s|
+              s.tags [:bar, "baz", "qux"]
               s.given "a dog"
               s.and   "a fire hydrant"
               s.then  "maglarble!"
-              s.tags [:bar, "baz"], "qux"
             end
           end
         end
