@@ -62,7 +62,10 @@ module Gherkin
 
     def to_sexps
       elements.collect do |element| 
-        element.values_at(:type, :tags, :keyword, :name, :description)
+        sexp = element.values_at(:type, :keyword, :name)
+        sexp << element[:description] unless element[:description].empty?
+        sexp << element[:tags] unless element[:tags].empty?
+        sexp
       end
     end
 
