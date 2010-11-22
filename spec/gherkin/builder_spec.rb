@@ -132,7 +132,7 @@ module Gherkin
             scenario_outline "The Facts of the Matter" do
               step :given, "a <weapon>"
               step :and,   "a <motive>"
-              step :then,  "an <outcome>"
+              step :then,  "an <outcome>", "(And a py_string)"
 
               examples "Get a Clue" do
                 row %w(weapon motive outcome)
@@ -161,6 +161,9 @@ Feature: LULZ
     Given a <weapon>
     And a <motive>
     Then an <outcome>
+      """
+      (And a py_string)
+      """
 
     Examples: Get a Clue
       | weapon                | motive   | outcome |

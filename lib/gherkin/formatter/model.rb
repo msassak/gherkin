@@ -144,7 +144,14 @@ module Gherkin
         native_impl('gherkin')
 
         def self.from_hash(element)
-          new(*element.values_at(:comments, :keyword, :name, :line))
+          step = new(*element.values_at(:comments, :keyword, :name, :line))
+          step.multiline_arg = case element[:multiline_arg] 
+          when String
+            PyString.new(element[:multiline_arg], element[:line])
+          when Array
+            Row.new("", element[:multiline_arg], element[:line])
+          end
+          step
         end
 
         attr_accessor :multiline_arg
