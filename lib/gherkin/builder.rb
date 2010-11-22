@@ -27,8 +27,12 @@ module Gherkin
       elsif [:given, :when, :then, :and, :but].include?(kw)
         @elements << [:step, translate(kw), args[0]]
       elsif kw == :tags
+        # insert_tags_into_last_container(tags)
         tags = args.flatten.map{|tag| tag.to_s}
-        @elements << [kw, tags]
+        last_container = @elements.reverse.find{|el| container_elements.include?(el[0])}
+        last_container.insert(1, []) unless last_container[1].is_a? Array
+        last_container[1] << tags
+        last_container[1].flatten!
       else # kw is for a container element
         @elements << [kw, translate(kw), args[0]]
         instance_eval(&block) if block_given?
@@ -47,6 +51,10 @@ module Gherkin
 
     def translate(word)
       @i18n.translate(word)
+    end
+
+    def container_elements
+      [:feature, :scenario, :scenario_outline, :examples]
     end
   end
 end

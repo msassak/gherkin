@@ -39,13 +39,12 @@ module Gherkin
     end
 
     it "builds raw tags" do
+      subject.feature "My Feature"
       subject.tags "foo"
       subject.tags :bar
       subject.tags ["baz", :qux], :quux
       subject.elements.should == [
-        [:tags, ["foo"]],
-        [:tags, ["bar"]],
-        [:tags, ["baz", "qux", "quux"]]
+        [:feature, ["foo", "bar", "baz", "qux", "quux"], "Feature", "My Feature"]
       ]
     end
 
@@ -66,6 +65,8 @@ module Gherkin
     it "builds containing and contained elements with delicious blocky sugar" do
       subject.build do
         feature "It will build you an island" do
+          tags %w[foo bar]
+
           scenario "Cell mart" do |s|
             s.given "An Evo 4G"
             s.when  "iPhone 4s are sold out"
@@ -73,6 +74,7 @@ module Gherkin
           end
 
           scenario "Apathy" do
+            tags :baz
             step :when, "It's out of date"
             step :then, "I don't care"
             step :and,  "I heard Walmart has them"
@@ -81,12 +83,12 @@ module Gherkin
       end
 
       subject.elements.should == [
-        [:feature, "Feature", "It will build you an island"],
+        [:feature, ["foo", "bar"], "Feature", "It will build you an island"],
         [:scenario, "Scenario", "Cell mart"],
         [:step, "Given ", "An Evo 4G"],
         [:step, "When ", "iPhone 4s are sold out"],
         [:step, "Then ", "I need the one with the bigger GBs"],
-        [:scenario, "Scenario", "Apathy"],
+        [:scenario, ["baz"], "Scenario", "Apathy"],
         [:step, "When ", "It's out of date"],
         [:step, "Then ", "I don't care"],
         [:step, "And ", "I heard Walmart has them"]

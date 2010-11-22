@@ -45,7 +45,7 @@ module Gherkin
         def self.from_raw(element)
           args = [[]] # Placeholder for comments
           args.push(*element)
-          args.push("")
+          args.push("") # placeholder for desc
           args.push(-1) # placeholder line number
           new(*args)
         end
@@ -61,9 +61,9 @@ module Gherkin
       class TagStatement < DescribedStatement
         def self.from_raw(element)
           args = [[]] # Placeholder for comments
-          args.push([])
+          args.push([]) # Placeholder for tags
           args.push(*element)
-          args.push("")
+          args.push("") # placeholder for desc
           args.push(-1) # placeholder line number
           new(*args)
         end
