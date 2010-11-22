@@ -10,32 +10,32 @@ module Gherkin
 
     it "builds raw features" do
       subject.feature "foo"
-      subject.elements.should == [[:feature, "Feature", "foo"]]
+      subject.to_sexps.should == [[:feature, [], "Feature", "foo"]]
     end
 
     it "builds raw scenarios" do
       subject.scenario "test"
-      subject.elements.should == [[:scenario, "Scenario", "test"]]
+      subject.to_sexps.should == [[:scenario, [], "Scenario", "test"]]
     end
 
     it "builds raw backgrounds" do
       subject.background "bigger GBs"
-      subject.elements.should == [[:background, "Background", "bigger GBs"]]
+      subject.to_sexps.should == [[:background, [], "Background", "bigger GBs"]]
     end
 
     it "builds raw scenario outlines" do
       subject.scenario_outline "test 2"
-      subject.elements.should == [[:scenario_outline, "Scenario Outline", "test 2"]]
+      subject.to_sexps.should == [[:scenario_outline, [], "Scenario Outline", "test 2"]]
     end
 
     it "builds raw examples" do
       subject.examples "yet another example of the futility of something"
-      subject.elements.should == [[:examples, "Examples", "yet another example of the futility of something"]]
+      subject.to_sexps.should == [[:examples, [], "Examples", "yet another example of the futility of something"]]
     end
 
     it "builds raw steps" do
       subject.step :given, "something else"
-      subject.elements.should == [[:step, "Given ", "something else"]]
+      subject.to_sexps.should == [[:step, [], "Given ", "something else"]]
     end
 
     it "builds raw tags" do
@@ -43,7 +43,7 @@ module Gherkin
       subject.tags "foo"
       subject.tags :bar
       subject.tags ["baz", :qux], :quux
-      subject.elements.should == [
+      subject.to_sexps.should == [
         [:feature, ["foo", "bar", "baz", "qux", "quux"], "Feature", "My Feature"]
       ]
     end
@@ -55,10 +55,10 @@ module Gherkin
         builder.then  "I can specify the adverb via the method name"
       end
 
-      subject.elements.should == [
-        [:step, "Given ", "I have a sweet tooth"],
-        [:step, "When ",  "I pass a block with an arity of one"],
-        [:step, "Then ",  "I can specify the adverb via the method name"]
+      subject.to_sexps.should == [
+        [:step, [], "Given ", "I have a sweet tooth"],
+        [:step, [], "When ",  "I pass a block with an arity of one"],
+        [:step, [], "Then ",  "I can specify the adverb via the method name"]
       ]
     end
     
@@ -84,16 +84,16 @@ module Gherkin
         end
       end
 
-      subject.elements.should == [
+      subject.to_sexps.should == [
         [:feature, ["foo", "bar"], "Feature", "It will build you an island"],
         [:scenario, ["one", "two", "three"], "Scenario", "Cell mart"],
-        [:step, "Given ", "An Evo 4G"],
-        [:step, "When ", "iPhone 4s are sold out"],
-        [:step, "Then ", "I need the one with the bigger GBs"],
+        [:step, [], "Given ", "An Evo 4G"],
+        [:step, [], "When ", "iPhone 4s are sold out"],
+        [:step, [], "Then ", "I need the one with the bigger GBs"],
         [:scenario, ["baz"], "Scenario", "Apathy"],
-        [:step, "When ", "It's out of date"],
-        [:step, "Then ", "I don't care"],
-        [:step, "And ", "I heard Walmart has them"]
+        [:step, [], "When ", "It's out of date"],
+        [:step, [], "Then ", "I don't care"],
+        [:step, [], "And ", "I heard Walmart has them"]
       ]
     end
 
@@ -135,13 +135,13 @@ EOF
         step :given, "Wibble"
       end
 
-      subject.elements.should == [
-        [:feature, "Egenskap", "Foo"],
-        [:background, "Bakgrunn", "Bar"],
-        [:scenario, "Scenario", "Baz"],
-        [:scenario_outline, "Scenariomal", "Qux"],
-        [:examples, "Eksempler", "Quux"],
-        [:step, "Gitt ", "Wibble"]
+      subject.to_sexps.should == [
+        [:feature, [], "Egenskap", "Foo"],
+        [:background, [], "Bakgrunn", "Bar"],
+        [:scenario, [], "Scenario", "Baz"],
+        [:scenario_outline, [], "Scenariomal", "Qux"],
+        [:examples, [], "Eksempler", "Quux"],
+        [:step, [], "Gitt ", "Wibble"]
       ]
     end
   end

@@ -21,30 +21,39 @@ module Gherkin
     end
 
     def method_missing(kw, *args, &block)
-      # Need to call super or we'll get super (ha ha) weird errors
       if kw == :step
-        elements << [:step, translate(args[0]), args[1]]
+        elements << build_hash(:step, translate(args[0]), args[1])
+
       elsif [:given, :when, :then, :and, :but].include?(kw)
-        elements << [:step, translate(kw), args[0]]
-      elsif kw == :tags
-        # insert_tags_into_last_container(tags)
-        tags = args.flatten.map{|tag| tag.to_s}
-        last_container = elements.reverse.find{|el| container_elements.include?(el[0])}
-        last_container.insert(1, []) unless last_container[1].is_a? Array
-        last_container[1] << tags
-        last_container[1].flatten!
-      else # kw is for a container element
-        elements << [kw, translate(kw), args[0]]
+        elements << build_hash(:step, translate(kw), args[0])
+
+      elsif [:feature, :background, :scenario, :scenario_outline, :examples].include?(kw)
+        elements << build_hash(kw, translate(kw), args[0])
         instance_eval(&block) if block_given?
+
+      elsif kw == :tags
+        tags = args.flatten.map{|tag| tag.to_s}
+        last_taggable = elements.reverse.find{|el| tag_elements.include?(el[:type])}
+        last_taggable[:tags] << tags
+        last_taggable[:tags].flatten!
+
+      else
+        super(kw, *args, &block)
       end
     end
 
     def to_gherkin
       out = StringIO.new
       pretty = Formatter::PrettyFormatter.new(out, true)
-      elements.each{ |element| Formatter::Model.from_raw(element).replay(pretty) }
+      elements.each{ |element| Formatter::Model.from_hash(element).replay(pretty) }
       out.rewind
       out.string
+    end
+
+    def to_sexps
+      elements.collect do |element| 
+        element.values_at(:type, :tags, :keyword, :name)
+      end
     end
 
     private
@@ -53,8 +62,20 @@ module Gherkin
       @i18n.translate(word)
     end
 
-    def container_elements
+    def tag_elements
       [:feature, :scenario, :scenario_outline, :examples]
+    end
+
+    def build_hash(type, keyword, name)
+      {
+        :type        => nil,
+        :keyword     => nil,
+        :name        => nil,
+        :description => "",
+        :line        => -1,
+        :comments    => [],
+        :tags        => []
+      }.merge(:type => type, :keyword => keyword, :name => name)
     end
   end
 end

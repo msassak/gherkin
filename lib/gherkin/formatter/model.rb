@@ -5,10 +5,10 @@ module Gherkin
   module Formatter
     module Model
       class << self
-        def from_raw(element)
-          class_name = element.shift
+        def from_hash(element)
+          class_name = element[:type]
           model = const_get(classify(class_name))
-          model.from_raw(element)
+          model.from_hash(element)
         end
 
         def classify(identifier)
@@ -18,11 +18,8 @@ module Gherkin
       end
 
       class BasicStatement < Hashable
-        def self.from_raw(element)
-          args = [[]] # placeholder for comments
-          args.push(*element)
-          args.push(-1) # placeholder line number
-          new(*args)
+        def self.from_hash(element)
+          new(*element.values_at(:comments, :keyword, :name, :line))
         end
 
         attr_reader :comments, :keyword, :name, :line
@@ -42,12 +39,8 @@ module Gherkin
       end
 
       class DescribedStatement < BasicStatement
-        def self.from_raw(element)
-          args = [[]] # Placeholder for comments
-          args.push(*element)
-          args.push("") # placeholder for desc
-          args.push(-1) # placeholder line number
-          new(*args)
+        def self.from_hash(element)
+          new(*element.values_at(:comments, :keyword, :name, :description, :line))
         end
 
         attr_reader :description
@@ -59,13 +52,8 @@ module Gherkin
       end
 
       class TagStatement < DescribedStatement
-        def self.from_raw(element)
-          args = [[]] # Placeholder for comments
-          args.push([]) # Placeholder for tags
-          args.push(*element)
-          args.push("") # placeholder for desc
-          args.push(-1) # placeholder line number
-          new(*args)
+        def self.from_hash(element)
+          new(*element.values_at(:comments, :tags, :keyword, :name, :description, :line))
         end
 
         attr_reader :tags
