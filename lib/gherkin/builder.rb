@@ -42,6 +42,10 @@ module Gherkin
         last[:tags] << tags
         last[:tags].flatten!
 
+      elsif kw == :row
+        last = elements.reverse.find{|el| el[:type] == :examples}
+        last[:rows] << args[0]
+
       else
         super(kw, *args, &block)
       end
@@ -84,7 +88,8 @@ module Gherkin
         :description => "",
         :line        => -1,
         :comments    => [],
-        :tags        => []
+        :tags        => [],
+        :rows        => []
       }.merge(:type => type, :keyword => keyword, :name => name)
     end
 

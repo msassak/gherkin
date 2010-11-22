@@ -123,9 +123,14 @@ module Gherkin
       class Examples < TagStatement
         native_impl('gherkin')
 
+        def self.from_hash(element)
+          element[:rows].map!{|cells| Row.new("", cells, element[:line]) }
+          new(*element.values_at(:comments, :tags, :keyword, :name, :description, :line, :rows))
+        end
+
         attr_accessor :rows
 
-        def initialize(comments, tags, keyword, name, description, line, rows=nil)
+        def initialize(comments, tags, keyword, name, description, line, rows=[])
           super(comments, tags, keyword, name, description, line)
           @rows = rows
         end

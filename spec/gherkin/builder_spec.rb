@@ -123,6 +123,12 @@ module Gherkin
               step :given, "a <weapon>"
               step :and,   "a <motive>"
               step :then,  "an <outcome>"
+
+              examples "Get a Clue" do
+                row %w(weapon motive outcome)
+                row %w(candlestick jealousy jail)
+                row %w(financial_instruments greed bailout)
+              end
             end
           end
         end
@@ -145,6 +151,11 @@ Feature: LULZ
     Given a <weapon>
     And a <motive>
     Then an <outcome>
+
+    Examples: Get a Clue
+      | weapon                | motive   | outcome |
+      | candlestick           | jealousy | jail    |
+      | financial_instruments | greed    | bailout |
 EOF
 
       end
