@@ -31,6 +31,10 @@ module Gherkin
         elements << build_hash(kw, translate(kw), args[0])
         instance_eval(&block) if block_given?
 
+      elsif kw == :description
+        last_describable = elements.reverse.find{|el| describable.include?(el[:type])}
+        last_describable[:description] = args[0]
+
       elsif kw == :tags
         tags = args.flatten.map{|tag| "@#{tag.to_s}"} 
         last_taggable = elements.reverse.find{|el| tag_elements.include?(el[:type])}
@@ -52,7 +56,7 @@ module Gherkin
 
     def to_sexps
       elements.collect do |element| 
-        element.values_at(:type, :tags, :keyword, :name)
+        element.values_at(:type, :tags, :keyword, :name, :description)
       end
     end
 
@@ -64,6 +68,10 @@ module Gherkin
 
     def tag_elements
       [:feature, :scenario, :scenario_outline, :examples]
+    end
+
+    def describable
+      [:feature, :background, :scenario, :scenario_outline, :examples]
     end
 
     def build_hash(type, keyword, name)
