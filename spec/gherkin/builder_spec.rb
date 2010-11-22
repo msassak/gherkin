@@ -118,6 +118,12 @@ module Gherkin
               s.and   "a fire hydrant"
               s.then  "maglarble!"
             end
+
+            scenario_outline "The Facts of the Matter" do
+              step :given, "a <weapon>"
+              step :and,   "a <motive>"
+              step :then,  "an <outcome>"
+            end
           end
         end
 
@@ -134,6 +140,11 @@ Feature: LULZ
     Given a dog
     And a fire hydrant
     Then maglarble!
+
+  Scenario Outline: The Facts of the Matter
+    Given a <weapon>
+    And a <motive>
+    Then an <outcome>
 EOF
 
       end
