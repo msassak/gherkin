@@ -138,29 +138,35 @@ EOF
 
       end
     end
-  end
 
-  describe Builder, "with a specific language" do
-    subject { Gherkin::Builder.new("no") }
+    context "with a specific language" do
+      subject { Gherkin::Builder.new("no") }
 
-    it "uses the translation for the keywords" do
-      subject.build do
-        feature "Foo"
-        background "Bar"
-        scenario "Baz"
-        scenario_outline "Qux"
-        examples "Quux"
-        step :given, "Wibble"
+      it "uses the translation for the keywords" do
+        subject.build do
+          feature "Foo"
+          background "Bar"
+          scenario "Baz"
+          scenario_outline "Qux"
+          examples "Quux"
+          step :given, "Wibble"
+        end
+
+        subject.to_sexps.should == [
+          [:feature, [], "Egenskap", "Foo", ""],
+          [:background, [], "Bakgrunn", "Bar", ""],
+          [:scenario, [], "Scenario", "Baz", ""],
+          [:scenario_outline, [], "Scenariomal", "Qux", ""],
+          [:examples, [], "Eksempler", "Quux", ""],
+          [:step, [], "Gitt ", "Wibble", ""]
+        ]
       end
 
-      subject.to_sexps.should == [
-        [:feature, [], "Egenskap", "Foo", ""],
-        [:background, [], "Bakgrunn", "Bar", ""],
-        [:scenario, [], "Scenario", "Baz", ""],
-        [:scenario_outline, [], "Scenariomal", "Qux", ""],
-        [:examples, [], "Eksempler", "Quux", ""],
-        [:step, [], "Gitt ", "Wibble", ""]
-      ]
+      describe "#to_gherkin" do
+        it "includes the language pragma comment" do
+          subject.build{ feature "Lutefisk" }.to_gherkin.should == "# language: no\nEgenskap: Lutefisk\n"
+        end
+      end
     end
   end
 end

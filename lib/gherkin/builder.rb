@@ -14,6 +14,7 @@ module Gherkin
 
     def build(&block)
       instance_eval(&block)
+      self
     end
 
     def i18n_lang
@@ -49,6 +50,7 @@ module Gherkin
     def to_gherkin
       out = StringIO.new
       pretty = Formatter::PrettyFormatter.new(out, true)
+      add_language_pragma(i18n_lang, elements[0]) if i18n_lang != "en"
       elements.each{ |element| Formatter::Model.from_hash(element).replay(pretty) }
       out.rewind
       out.string
@@ -84,6 +86,10 @@ module Gherkin
         :comments    => [],
         :tags        => []
       }.merge(:type => type, :keyword => keyword, :name => name)
+    end
+
+    def add_language_pragma(lang, element)
+      element[:comments] << Formatter::Model::Comment.new("# language: #{lang}", -1)
     end
   end
 end
