@@ -149,7 +149,7 @@ module Gherkin
           when String
             PyString.new(element[:multiline_arg], element[:line])
           when Array
-            Row.new("", element[:multiline_arg], element[:line])
+            element[:multiline_arg].map!{|cells| Row.new("", cells, element[:line])}
           end
           step
         end

@@ -27,7 +27,8 @@ module Gherkin
                                :multiline_arg => args[2])
 
       elsif [:given, :when, :then, :and, :but].include?(kw)
-        elements << build_hash(:step, translate(kw), args[0])
+        elements << build_hash(:step, translate(kw), args[0],
+                               :multiline_arg => args[1])
 
       elsif describable.include?(kw)
         elements << build_hash(kw, translate(kw), args[0])

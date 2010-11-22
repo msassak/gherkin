@@ -125,7 +125,7 @@ module Gherkin
             scenario "Maglarble" do |s|
               s.tags [:bar, "baz", "qux"]
               s.given "a dog"
-              s.and   "a fire hydrant"
+              s.and   "a fire hydrant", [["attributes"], ["red"], ["quite fetching, really"]] 
               s.then  "maglarble!"
             end
 
@@ -155,6 +155,9 @@ Feature: LULZ
   Scenario: Maglarble
     Given a dog
     And a fire hydrant
+      | attributes             |
+      | red                    |
+      | quite fetching, really |
     Then maglarble!
 
   Scenario Outline: The Facts of the Matter
