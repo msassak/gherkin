@@ -27,19 +27,19 @@ module Gherkin
       elsif [:given, :when, :then, :and, :but].include?(kw)
         elements << build_hash(:step, translate(kw), args[0])
 
-      elsif [:feature, :background, :scenario, :scenario_outline, :examples].include?(kw)
+      elsif describable.include?(kw)
         elements << build_hash(kw, translate(kw), args[0])
         instance_eval(&block) if block_given?
 
       elsif kw == :description
-        last_describable = elements.reverse.find{|el| describable.include?(el[:type])}
-        last_describable[:description] = args[0]
+        last = elements.reverse.find{|el| describable.include?(el[:type])}
+        last[:description] = args[0]
 
       elsif kw == :tags
         tags = args.flatten.map{|tag| "@#{tag.to_s}"} 
-        last_taggable = elements.reverse.find{|el| tag_elements.include?(el[:type])}
-        last_taggable[:tags] << tags
-        last_taggable[:tags].flatten!
+        last = elements.reverse.find{|el| taggable.include?(el[:type])}
+        last[:tags] << tags
+        last[:tags].flatten!
 
       else
         super(kw, *args, &block)
@@ -66,7 +66,7 @@ module Gherkin
       @i18n.translate(word)
     end
 
-    def tag_elements
+    def taggable
       [:feature, :scenario, :scenario_outline, :examples]
     end
 
