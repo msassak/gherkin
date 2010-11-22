@@ -44,7 +44,7 @@ module Gherkin
       subject.tags :bar
       subject.tags ["baz", :qux], :quux
       subject.to_sexps.should == [
-        [:feature, ["foo", "bar", "baz", "qux", "quux"], "Feature", "My Feature"]
+        [:feature, ["@foo", "@bar", "@baz", "@qux", "@quux"], "Feature", "My Feature"]
       ]
     end
 
@@ -85,12 +85,12 @@ module Gherkin
       end
 
       subject.to_sexps.should == [
-        [:feature, ["foo", "bar"], "Feature", "It will build you an island"],
-        [:scenario, ["one", "two", "three"], "Scenario", "Cell mart"],
+        [:feature, ["@foo", "@bar"], "Feature", "It will build you an island"],
+        [:scenario, ["@one", "@two", "@three"], "Scenario", "Cell mart"],
         [:step, [], "Given ", "An Evo 4G"],
         [:step, [], "When ", "iPhone 4s are sold out"],
         [:step, [], "Then ", "I need the one with the bigger GBs"],
-        [:scenario, ["baz"], "Scenario", "Apathy"],
+        [:scenario, ["@baz"], "Scenario", "Apathy"],
         [:step, [], "When ", "It's out of date"],
         [:step, [], "Then ", "I don't care"],
         [:step, [], "And ", "I heard Walmart has them"]
@@ -101,17 +101,22 @@ module Gherkin
       it "outputs the feature in Gherkin format" do
         subject.build do 
           feature "LULZ" do
+            tags "foo"
+
             scenario "Maglarble" do |s|
               s.given "a dog"
               s.and   "a fire hydrant"
               s.then  "maglarble!"
+              s.tags [:bar, "baz"], "qux"
             end
           end
         end
 
         subject.to_gherkin.should == <<EOF
+@foo
 Feature: LULZ
 
+  @bar @baz @qux
   Scenario: Maglarble
     Given a dog
     And a fire hydrant

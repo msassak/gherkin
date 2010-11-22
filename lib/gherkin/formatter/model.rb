@@ -53,6 +53,7 @@ module Gherkin
 
       class TagStatement < DescribedStatement
         def self.from_hash(element)
+          element[:tags].map!{|el| Tag.new(el, element[:line]) }
           new(*element.values_at(:comments, :tags, :keyword, :name, :description, :line))
         end
 

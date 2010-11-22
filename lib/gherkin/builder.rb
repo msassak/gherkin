@@ -32,7 +32,7 @@ module Gherkin
         instance_eval(&block) if block_given?
 
       elsif kw == :tags
-        tags = args.flatten.map{|tag| tag.to_s}
+        tags = args.flatten.map{|tag| "@#{tag.to_s}"} 
         last_taggable = elements.reverse.find{|el| tag_elements.include?(el[:type])}
         last_taggable[:tags] << tags
         last_taggable[:tags].flatten!
