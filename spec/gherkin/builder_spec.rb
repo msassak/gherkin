@@ -71,6 +71,8 @@ module Gherkin
             s.given "An Evo 4G"
             s.when  "iPhone 4s are sold out"
             s.then  "I need the one with the bigger GBs"
+            s.tags  "one"
+            s.tags  [:two, "three"]
           end
 
           scenario "Apathy" do
@@ -84,7 +86,7 @@ module Gherkin
 
       subject.elements.should == [
         [:feature, ["foo", "bar"], "Feature", "It will build you an island"],
-        [:scenario, "Scenario", "Cell mart"],
+        [:scenario, ["one", "two", "three"], "Scenario", "Cell mart"],
         [:step, "Given ", "An Evo 4G"],
         [:step, "When ", "iPhone 4s are sold out"],
         [:step, "Then ", "I need the one with the bigger GBs"],
