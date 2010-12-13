@@ -268,6 +268,16 @@ f'real
             [:eof]
           ]
         end
+
+        it "should parse examples without a table" do
+          pending do
+            scan(%{Examples: I'll do the other part later})
+            @listener.to_sexp.should == [
+              [:examples, "Examples", "I'll do the otehr part later", 1],
+              [:eof]
+            ]
+          end
+        end
       end
       
       describe "Steps" do
